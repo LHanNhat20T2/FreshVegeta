@@ -32,7 +32,10 @@ class SearchController extends Controller
 
     public function liveSearch(Request $request)
     {   
-    	
+    	// dd($request->search);
+        $getSearch = Product::where('name','LIKE',"%{$request->search}%")->get();
+        // dd($getSearch);
+        return view('Frontend.Search.item_search',compact('getSearch'));
     }
 
 
