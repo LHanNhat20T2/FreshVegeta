@@ -54,7 +54,33 @@ class ProductController extends Controller
 
 
     public function addToCart(Request $request){
+        $getProducts = Product::where('id',$request->id)->get()->toArray();
+
+        $product = Product::findOrFail($request->id)->toArray();
+
+        $img = json_decode($product['image'], true);
         
+        $cart = session()->get('cart', []);
+
+        if(isset($cart[$request->id])) {
+            if($request->quantity == 1){
+                $cart[$request->id]['quantity'] ++;
+            }else{
+                $cart[$request->id]['quantity'] = $cart[$request->id]['quantity'] + $request->quantity;
+            }
+        } else {
+            $cart[$request->id] = [
+                "name" => $product['name'],
+                "quantity" => $request->quantity,
+                "price" => $product['price'],
+                "image" => $img[0],
+            ];
+        }
+
+        session()->put('cart', $cart);
+
+        return view('Frontend.Index.cart_item',compact('cart'));
+        // return redirect()->action([UserController::class, 'index'])->with('success', 'Product added to cart successfully!');
     }
 
 
