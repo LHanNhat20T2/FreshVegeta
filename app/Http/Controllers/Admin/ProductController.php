@@ -44,7 +44,44 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        foreach($request->file('filename') as $image)
+        {
 
+            $name = $image->getClientOriginalName();
+            $name_2 = "2".$image->getClientOriginalName();
+            $name_3 = "3".$image->getClientOriginalName();
+
+            $path = public_path('upload/product/' . $name);
+            $path2 = public_path('upload/product/' . $name_2);
+            $path3 = public_path('upload/product/' . $name_3);
+
+            Image::make($image->getRealPath())->save($path);
+            Image::make($image->getRealPath())->resize(50, 70)->save($path2);
+            Image::make($image->getRealPath())->resize(200, 300)->save($path3);
+            $data[] = $name;
+        }
+
+        $type = TypeProduct::where('id',$request->type)->get()->toArray();    
+        
+        // dd($type[0]['id']);
+
+
+        if(Product::create([
+                'name' => $request->name,
+                'idType' => $request->type,
+                'image' => json_encode($data),
+                'description'=> $request->description,
+                'unitCal' => $type[0]['unitCal'],
+                'price' => $request->price,
+                'quantity' => $request->quantity,
+            ]))
+        {
+            return redirect()->action([ProductController::class,'index'])->with('success', __('Create Product success. '));
+        }
+        else
+        {
+            return redirect()->back()->withErrors('Create Product fail');
+        }
         
     }
 
