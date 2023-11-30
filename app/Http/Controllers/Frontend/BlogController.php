@@ -28,8 +28,10 @@ class BlogController extends Controller
     }
 
     public function detail_blog($id)
-    {   
-        
+    {   $getnewBlogs = Blog::select('*')->orderBy('created_at', 'DESC')->take(4)->get();
+        $getCategorys = Category::all();
+        $getBlogs = Blog::where('id',$id)->get();
+        return view('Frontend.Blog.detail',compact('getBlogs','getCategorys','getnewBlogs'));
     }
 
 
