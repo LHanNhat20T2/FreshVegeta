@@ -18,6 +18,10 @@ class UserController extends Controller
      */
     public function index()
     {   
+        $getCategorys = Category::all();
+        $getProducts = Product::select('*')->orderBy('created_at', 'DESC')->take(8)->get();
+
+        return view('Frontend.Index.index',compact('getCategorys', 'getProducts'));
         
     }
 
