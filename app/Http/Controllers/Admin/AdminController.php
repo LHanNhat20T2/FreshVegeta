@@ -76,7 +76,34 @@ class AdminController extends Controller
      */
     public function update(Request $request)
     {
-        
+        $userId = Auth::id();
+
+        $user = User::findOrFail($userId);
+
+        $data = $request->all();
+
+        if($data['pass']){
+            $data['pass'] = bcrypt($data['pass']);
+        }else{
+            $data['pass']= $user->password;
+        }
+
+        if($request->hasFile('filesTest')){
+            $file = $request->file('filesTest');
+            $data['avatar'] = $file->getClientOriginalName();
+
+        }
+
+        if($user->update($data)){
+            if(!empty($file)){
+               $file->move('Admin/imageuser',$file->getClientOriginalName());
+            }
+
+            return redirect()->back()->with('success', __('Update profile success. '));
+        }else{
+            return redirect()->back()->withErrors('Update profile error');
+        }
+
     }
 
     /**
